@@ -8,7 +8,16 @@
     border: 1px solid black;
     margin: 0 7.5px 15px;
     background-position: center;
-    background-size: cover;
+    background-size: 100%;
+    transition: background-size 6s;
+
+    &:hover {
+      cursor: pointer;
+      background-size: 130%;
+      & .content {
+        opacity: .9;
+      }
+    }
     
     &.large {
       height: 380px;
@@ -30,8 +39,11 @@
       align-items: center;
       justify-content: center;
       border: 1px solid black;
+      background-color: white;
+      opacity: .7;
   
       .title {
+        text-transform: uppercase;
         font-weight: bold;
         margin-bottom: 6px;
         font-size: 22px;
