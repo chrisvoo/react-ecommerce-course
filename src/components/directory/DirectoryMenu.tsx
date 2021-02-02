@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { MenuItem } from '../menu-item/MenuItem';
-
+import MenuItem from '../menu-item/MenuItem';
+import SECTIONS_DATA from './sections.data';
 import './DirectoryMenu.scss';
 
 export type DirectorySection = {
     title: string
     imageUrl: string
-    id?: number
-    linkUrl?: string
+    id: number
+    linkUrl: string
     size?: string
 }
 
@@ -20,45 +20,12 @@ export type DirectoryState = Readonly<DirectorySections>
 /**
  * Component<MyProps, MyState>
  */
-export class DirectoryMenu extends Component<any, DirectoryState> {
+export default class DirectoryMenu extends Component<any, DirectoryState> {
     constructor(props: any) {
         super(props);
 
         this.state = {
-            sections: [
-                {
-                  title: 'hats',
-                  imageUrl: 'https://i.ibb.co/cvpntL1/hats.png',
-                  id: 1,
-                  linkUrl: 'shop/hats'
-                },
-                {
-                  title: 'jackets',
-                  imageUrl: 'https://i.ibb.co/px2tCc3/jackets.png',
-                  id: 2,
-                  linkUrl: 'shop/jackets'
-                },
-                {
-                  title: 'sneakers',
-                  imageUrl: 'https://i.ibb.co/0jqHpnp/sneakers.png',
-                  id: 3,
-                  linkUrl: 'shop/sneakers'
-                },
-                {
-                  title: 'womens',
-                  imageUrl: 'https://i.ibb.co/GCCdy8t/womens.png',
-                  size: 'large',
-                  id: 4,
-                  linkUrl: 'shop/womens'
-                },
-                {
-                  title: 'mens',
-                  imageUrl: 'https://i.ibb.co/R70vBrQ/men.png',
-                  size: 'large',
-                  id: 5,
-                  linkUrl: 'shop/mens'
-                }
-              ],
+            sections: SECTIONS_DATA,
         };
     }
 
@@ -66,12 +33,10 @@ export class DirectoryMenu extends Component<any, DirectoryState> {
         return (
             <div className="directory-menu">
                 {
-                    this.state.sections.map(({ id, title, imageUrl, size }) => 
+                    this.state.sections.map((section: DirectorySection) => 
                       <MenuItem 
-                        key={id} 
-                        title={title}
-                        imageUrl={imageUrl}
-                        size={size}
+                        key={section.id} 
+                        {...section}
                       />)
                 }
             </div>
