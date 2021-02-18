@@ -1,5 +1,6 @@
 import React from 'react'
-import CollectionItem, { PreviewItem } from '../collection-item/CollectionItem';
+import CollectionItem from '../collection-item/CollectionItem';
+import { PreviewItem } from '../../redux/cart/cart-types';
 import './CollectionPreview.scss';
 
 export type PreviewCollectionProps = {
@@ -15,8 +16,8 @@ const PreviewCollection = ({ title, items }: PreviewCollectionProps) => {
                 {
                     items
                       .filter((item, idx) => idx < 4)
-                      .map(({ ...item }) =>
-                        <CollectionItem key={item.id} {...item} />
+                      .map((item) =>
+                        <CollectionItem key={item.id} item={item} />
                     )
                 }
             </div>

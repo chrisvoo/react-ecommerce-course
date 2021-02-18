@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Route, BrowserRouter, Switch } from 'react-router-dom';
+import React, { Component } from "react";
+import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import firebase from 'firebase';
+import { connect } from 'react-redux';
 import Homepage from './pages/homepage/Homepage';
 import Hatspage from './pages/hatspage/Hatspage';
 import './App.scss';
@@ -9,26 +10,31 @@ import Header from "./components/header/Header";
 import Authpage from "./pages/authpage/Authpage";
 import { auth } from './firebase/firebase.utils';
 import { createUserProfileDoc } from './firebase/firebase.utils';
-
-export interface ShopUserData {
-  displayName: string
-  email: string
-  createdAt: Date
-}
-
-export interface ShopUser extends ShopUserData {
-  id: string
-}
+import { 
+  ShopUser, setCurrentUser, ShopUserData, UserActionTypes,
+} from './redux/user/user.actions';
 
 export type FirebaseUser = firebase.User | null;
+export type AppProps = {
+  setCurrentUser: (user?: ShopUser) => UserActionTypes,
+  currentUser?: ShopUser
+}
 
-function App() {
-  const [currentUser, setCurrentUser] = useState<ShopUser | null>(null);
+type PropsFromRedux = {
+  currentUser: ShopUser
+  setCurrentUser: (user?: ShopUser) => any
+}
 
-  useEffect(() => {
-    const unsubscribeFromAuth: firebase.Unsubscribe = auth.onAuthStateChanged(async (user: FirebaseUser) => {
-      if (user) {
-        const userRef = await createUserProfileDoc(user);
+class App extends Component<PropsFromRedux> {
+  private unsubscribeFromAuth?: firebase.Unsubscribe = undefined;
+
+  componentDidMount() {
+    const { setCurrentUser } = this.props;
+
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth: FirebaseUser) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDoc(userAuth);
+
         if (userRef) {
           userRef.onSnapshot((snap: firebase.firestore.DocumentSnapshot) => {
             setCurrentUser({
@@ -37,30 +43,41 @@ function App() {
             });
           })
         }
-      } else {
-        setCurrentUser(null);
       }
+
+      setCurrentUser(undefined);
     });
+  }
 
-    // If your effect returns a function, React will run it when it is time to clean up
-    return () => unsubscribeFromAuth();
-  }, [])
+  componentWillUnmount() {
+    this.unsubscribeFromAuth!();
+  }
 
-  return (
-    <>
-    {/* Switch component enders the first matching route, Without it,
-        multiple components may be rendered */}
-      <BrowserRouter>
-        <Header currentUser={currentUser} />
-        <Switch>
-          <Route exact path='/' component={Homepage} />
-          <Route path='/shop/hats' component={Hatspage} />
-          <Route path='/shop' component={Shoppage} />
-          <Route path='/signin' component={Authpage} />
-        </Switch>
-      </BrowserRouter>
-    </>
-  );
+  render() {
+    return (
+      <>
+      {/* Switch component enders the first matching route, Without it,
+          multiple components may be rendered */}
+        <BrowserRouter>
+          <Header />
+          <Switch>
+            <Route exact path='/' component={Homepage} />
+            <Route path='/shop/hats' component={Hatspage} />
+            <Route path='/shop' component={Shoppage} />
+            <Route exact path='/signin' render={() => this.props.currentUser ? <Redirect to="/" /> : <Authpage />}/>
+          </Switch>
+        </BrowserRouter>
+      </>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = (state: any) => ({
+  currentUser: state.user.currentUser,
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+  setCurrentUser: (user?: ShopUser) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

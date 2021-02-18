@@ -7,9 +7,11 @@ export type CustomButtonProps = {
     [key: string]: any
 }
 
-const CustomButton = ({ children, isGoogleSignIn, ...props}: CustomButtonProps) => {
+const CustomButton = ({ children, isGoogleSignIn, inverted, ...props}: CustomButtonProps) => {
+    let cssClass = `${isGoogleSignIn ? "google-sign-in" : ""}`;
+    cssClass += ` ${inverted ? "inverted" : ""}`
     return (
-        <button className={`${isGoogleSignIn ? "google-sign-in" : ""} custom-button`} {...props}>
+        <button className={`${cssClass} custom-button`} {...props}>
             {children}
         </button>
     );
