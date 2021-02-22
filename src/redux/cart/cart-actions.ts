@@ -1,6 +1,6 @@
 import CartActionTypes, { PreviewItem } from './cart-types';
 
-export type SetCartAction = {
+export interface SetCartAction {
     type: typeof CartActionTypes.TOGGLE_CART_HIDDEN | typeof CartActionTypes.ADD_ITEM
     payload?: PreviewItem
 }

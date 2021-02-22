@@ -1,13 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
+import { Action, Dispatch } from 'redux';
 import CustomButton from '../custom-button/CustomButton';
-import { PreviewItem, SetCartAction } from '../../redux/cart/cart-types';
+import { PreviewItem } from '../../redux/cart/cart-types';
 import { addItem } from '../../redux/cart/cart-actions';
 import './CollectionItem.scss';
 
-export interface CollectionItemProps {
+export type CollectionItemProps = CollectionProps & {
     item: PreviewItem
-    addItem: (item: PreviewItem) => SetCartAction 
 };
 
 const CollectionItem = ({ item, addItem }: CollectionItemProps) => {
@@ -29,8 +29,12 @@ const CollectionItem = ({ item, addItem }: CollectionItemProps) => {
     );
 }
 
-const mapDispatchToProps = (dispatch: any) => ({
+const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
     addItem: (item: PreviewItem) => dispatch(addItem(item))
 })
 
-export default connect(null, mapDispatchToProps)(CollectionItem);
+const connector = connect(null, mapDispatchToProps);
+
+type CollectionProps = ConnectedProps<typeof connector>;
+
+export default connector(CollectionItem);
