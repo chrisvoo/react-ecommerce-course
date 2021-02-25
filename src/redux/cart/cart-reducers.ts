@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import CartActionTypes, { CartState, SetCartAction, PreviewItem } from "./cart-types";
-import { addItemToCart } from './cart-utils';
+import { addItemToCart, removeItem } from './cart-utils';
 
 const INITIAL_STATE: CartState = {
     hidden: true,
@@ -21,6 +21,17 @@ const cartReducer: CartReducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 cartItems: addItemToCart(state.cartItems, action.payload as unknown as PreviewItem),
             }
+        case CartActionTypes.REMOVE_ITEM:
+            return {
+                ...state,
+                cartItems: removeItem(state.cartItems, action.payload as unknown as PreviewItem),
+            }
+        case CartActionTypes.CLEAR_ITEM_FROM_CART:
+            const selectedItem = action.payload as unknown as PreviewItem;
+            return {
+                ...state,
+                cartItems: state.cartItems.filter(item => item.id !== selectedItem.id),
+            }                              
         default:
             return state;
     }
