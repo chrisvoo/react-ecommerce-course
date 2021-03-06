@@ -3,7 +3,6 @@ import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import firebase from 'firebase';
 import { connect, ConnectedProps } from 'react-redux';
 import Homepage from './pages/homepage/Homepage';
-import Hatspage from './pages/hatspage/Hatspage';
 import './App.scss';
 import Shoppage from "./pages/shop/Shoppage";
 import Header from "./components/header/Header";
@@ -54,7 +53,6 @@ class App extends Component<AppProps> {
           <Header />
           <Switch>
             <Route exact path='/' component={Homepage} />
-            <Route path='/shop/hats' component={Hatspage} />
             <Route path='/shop' component={Shoppage} />
             <Route exact path='/checkout' component={CheckOutPage} />
             <Route exact path='/signin' render={() => this.props.currentUser ? <Redirect to="/" /> : <Authpage />}/>

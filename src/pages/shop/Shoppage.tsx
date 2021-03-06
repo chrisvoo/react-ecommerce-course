@@ -1,6 +1,11 @@
-import React, { Component } from 'react';
-import ShopData from './shop.data';
-import CollectionPreview from '../../components/preview-collection/CollectionPreview';
+import React, { FC } from 'react';
+import { Route, RouteComponentProps } from 'react-router-dom';
+import { connect, ConnectedProps } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { RootState } from '../../redux/root-reducer';
+import { selectCollections } from '../../redux/shop/shop-selectors';
+import CollectionsOverview from '../../components/collection-overview/CollectionsOverview';
+import CollectionPage from '../collection/CollectionPage';
 
 export type CollectionItem = {
     id: number
@@ -16,30 +21,23 @@ export type Collection = {
     items: CollectionItem[]
 }
 
-export type ShopPageCollections = {
-    collection: Collection[]
+export type ShopPageState = {
+    collections: Record<string, Collection>
 }
 
-export type ShopPageState = Readonly<ShopPageCollections>
+const ShopPage: FC<ShopPageProps & RouteComponentProps> = ({ match }) => 
+ (
+    <div className="shop-page">
+        <Route exact path={`${match.path}`} component={CollectionsOverview} />
+        <Route path={`${match.path}/:collectionId`} component={CollectionPage} />
+    </div>
+ );
 
-export default class Shoppage extends Component<any, ShopPageState> {
-    constructor(props: any) {
-        super(props);
+const mapStateToProps = createStructuredSelector<RootState, ShopPageState>({
+    collections: selectCollections
+});
 
-        this.state = {
-            collection: ShopData,
-        }
-    }
+const connector = connect(mapStateToProps);
+type ShopPageProps = ConnectedProps<typeof connector>;
 
-    render() {
-        return (
-            <div className="shop-page">
-                {
-                    this.state.collection.map(({ id, ...props }) => 
-                      <CollectionPreview key={id} {...props} />
-                    )
-                }
-            </div>
-        );
-    }
-}
+export default connector(ShopPage);

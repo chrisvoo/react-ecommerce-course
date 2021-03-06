@@ -10,7 +10,7 @@ import { selectCartItems } from '../../redux/cart/cart-selectors';
 import { toggleCartHidden } from  '../../redux/cart/cart-actions';
 
 
-const Cart: FC<CartProps & RouteComponentProps> = ({ cartItems, history, dispatch }) => (
+const CartDropDown: FC<CartProps & RouteComponentProps> = ({ cartItems, history, dispatch }) => (
     <div className="cart-dropdown">
         <div className="cart-items">
         {
@@ -42,4 +42,4 @@ const connector = connect(mapStateToProps);
 
 type CartProps = ConnectedProps<typeof connector>;
 
-export default withRouter(connector(Cart));
+export default withRouter(connector(CartDropDown));
