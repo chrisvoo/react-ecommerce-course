@@ -5,6 +5,7 @@ import { selectCartItems, selectCartTotal } from '../../redux/cart/cart-selector
 import { PreviewItem } from '../../redux/cart/cart-types';
 import { RootState } from '../../redux/root-reducer';
 import CheckOutItem from '../../components/check-out/CheckOutItem';
+import StripeCheckoutButton from '../../components/stripe-button/StripeButton';
 import './CheckOutPage.scss';
 
 const CheckOutPage: FC<MappedProps> = ({ cartItems, total }) => (
@@ -32,6 +33,12 @@ const CheckOutPage: FC<MappedProps> = ({ cartItems, total }) => (
         <div className='total'>
             <span>TOTAL: ${total}</span>
         </div>
+        <div className='test-warning'>
+            *Please use the following test credit card for payments (<a rel='noreferrer' href='https://stripe.com/docs/testing#cards' target='_blank'>see docs</a>)*
+            <br/>
+            4242 4242 4242 4242 - Exp: Any date in the future - CVV: any three digits
+        </div>
+        <StripeCheckoutButton price={total} />
     </div>
 );
 

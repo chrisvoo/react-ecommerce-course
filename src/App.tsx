@@ -1,7 +1,9 @@
 import React, { Component } from "react";
+import { ValidationError } from 'joi';
 import { Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import firebase from 'firebase';
 import { connect, ConnectedProps } from 'react-redux';
+import { schema } from './utils/envUtils';
 import Homepage from './pages/homepage/Homepage';
 import './App.scss';
 import Shoppage from "./pages/shop/Shoppage";
@@ -16,10 +18,25 @@ import CheckOutPage from "./pages/check-out/CheckOutPage";
 
 export type FirebaseUser = firebase.User | null;
 
-class App extends Component<AppProps> {
+class App extends Component<AppProps, { error?: ValidationError }> {
   private unsubscribeFromAuth?: firebase.Unsubscribe = undefined;
 
+  constructor(props: any) {
+    super(props);
+
+    this.state = {
+      error: undefined
+    }
+  }
+
   componentDidMount() {
+    const { PORT, REACT_APP_STRIPE_PUBKEY, NODE_ENV, PUBLIC_URL } = process.env
+
+    const { error } = schema.validate({ PORT, REACT_APP_STRIPE_PUBKEY, NODE_ENV, PUBLIC_URL });
+    if (error) {
+      this.setState({ error });
+    }
+
     const { setCurrentUser } = this.props;
 
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth: FirebaseUser) => {
@@ -45,6 +62,14 @@ class App extends Component<AppProps> {
   }
 
   render() {
+    if (this.state.error) {
+      return (
+        <div>
+          Environment variables check reported an error: {this.state.error.message}
+        </div>
+      );
+    }
+
     return (
       <>
       {/* Switch component enders the first matching route, Without it,
